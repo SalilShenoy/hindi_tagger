@@ -31,13 +31,16 @@
             }
             gzclose($fh);
         }
+        preg_match_all("/[\w\d]+/", $text, $matches);
 
+        print_r($matches[0]);
+        print_r($matches[1]);
         #print_r ($dictionary);
-        $nouns = ['noun', 'pronoun', 'ex_noun'];
+        $nouns = ['NN'];
         $tokens = explode(' ', $text);
 
         print_r ($tokens);
-        
+
         $result = [];
         $tag_list = [];
         $i = 0;
