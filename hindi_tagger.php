@@ -33,7 +33,7 @@
         }
 
         #print_r ($dictionary);
-        $nouns = ['noun', 'pronoun', 'ex_noun'];
+        $nouns = ['NN'];
         $tokens = explode(' ', $text);
 
         print_r ($tokens);
@@ -43,7 +43,7 @@
         $i = 0;
 
         foreach ($tokens as $token) {
-            $current = ['token' => $token, 'tag' => 'noun'];
+            $current = ['token' => $token, 'tag' => 'NN'];
             if (!empty($dictionary[$token])) {
                 $tag_list = $dictionary[$token];
                 $current['tag'] = $tag_list[0];
@@ -54,6 +54,7 @@
             $previous = $current;
             $previous_token = $token;
         }
+        return $result;
     }
 
     public static function taggedPartOfSpeechTokensToString($tagged_tokens, 
@@ -77,6 +78,7 @@
 $hiToken = new HindiToknize;
 $text = "मैं ठीक हूँ";
 $tagged_tokens = $hiToken->tagTokenizePartsofSpeech($text);
+print_r ($tagged_tokens);
 $tagged_phrase = $hiToken->taggedPartOfSpeechTokensToString(
             $tagged_tokens);
 print_r ($tagged_phrase);
