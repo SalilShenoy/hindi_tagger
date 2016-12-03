@@ -22,10 +22,10 @@
         static $dictionary = [];
         if (empty($dictionary)) {
             $fh = 
-            gzopen('vendor/seekquarry/yioop/src/locale/hi/resources/lexicon.txt.gz', 'r'); 
+            gzopen('lexicon.txt.gz', 'r'); 
             while ($line = gzgets($fh)) {
                 $line = gzgets($fh);
-                $line = ltrim($line, '/');
+                $line = trim($line, ' ');
                 $tags = explode(',', $line);
                 $dictionary[array_shift($tags)] = $tags;
             }
@@ -76,7 +76,7 @@
 }
 
 $hiToken = new HindiToknize;
-$text = "मैं ठीक हूँ";
+$text = "अपने इनमें"; 
 $tagged_tokens = $hiToken->tagTokenizePartsofSpeech($text);
 print_r ($tagged_tokens);
 $tagged_phrase = $hiToken->taggedPartOfSpeechTokensToString(
