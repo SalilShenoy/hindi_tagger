@@ -381,8 +381,6 @@ class Tokenizer
                 $current['tag'] = $tag_list[0];
             }
 
-            print $token . ' ==> ';
-            print_r ($tag_list);
             // Converts verbs after 'the' to nouns
             if ($previous['tag'] == 'DT' && in_array($current['tag'], $verbs)){
                 $current['tag'] = 'NN';

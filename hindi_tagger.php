@@ -6,7 +6,7 @@ use seekquarry\yioop\configs as C;
 require_once "vendor/autoload.php";
  
 
-class HindiToknize
+class HindiTokenizer
 {
    public static function tagTokenizePartsofSpeech($text)
    {
@@ -31,11 +31,15 @@ class HindiToknize
        $i = 0;
 
        foreach ($tokens as $token) {
+
+           //default to common noun 
            $current = ['token' => $token, 'tag' => 'NN'];
            if (!empty($dictionary[$token])) {
                $tag_list = $dictionary[$token];
                $current['tag'] = $tag_list[0];
-           }  
+           }
+
+           if ($current	   
 
            $result[$i] = $current;
            $i++;
@@ -72,10 +76,11 @@ class HindiToknize
    }
 }
 
-$hiToken = new HindiToknize;
+$hiToken = new HindiTokenizer;
 $text = $argv[1]; 
 $tagged_tokens = $hiToken->tagTokenizePartsofSpeech($text);
-$tagged_phrase = $hiToken->taggedPartOfSpeechTokensToString(
-                           $tagged_tokens);
-print_r ($tagged_phrase);
+print_r ($tagged_tokens);
+#$tagged_phrase = $hiToken->taggedPartOfSpeechTokensToString(
+#                           $tagged_tokens);
+#print_r ($tagged_phrase);
 ?>
