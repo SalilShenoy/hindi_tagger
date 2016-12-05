@@ -48,17 +48,27 @@ class HindiToknize
    public static function taggedPartOfSpeechTokensToString($tagged_tokens, 
                                                            $with_tokens = true)
    {
-       $tagged_phrase = [];
-       $with_tokens = $with_tokens;
-       foreach ($tagged_tokens as $t) {
-           $tag = trim($t['tag']);
-           $tag = (isset($simplified_parts_of_speech[$tag])) ?
-               $simplified_parts_of_speech[$tag] : $tag;
-           $token = ($with_tokens) ? $t['token'] . "~" : "";
-           $tagged_phrase .= $token . $tag .  " ";
-       }
+      $tagged_phrase = [];
+      $with_tokens = $with_tokens;
 
-       return $tagged_phrase;
+      $simplified_parts_of_speech = [
+          "NN" => "NN", "NNS" => "NN", "NNP" => "NN", "NNPS" => "NN",
+          "PRP" => "NN", 'PRP$' => "NN", "WP" => "NN",
+          "VB" => "VB", "VBD" => "VB", "VBN" => "VB", "VBP" => "VB",
+          "VBZ" => "VB",
+          "JJ" => "AJ", "JJR" => "AJ", "JJS" => "AJ",
+          "RB" => "AV", "RBR" => "AV", "RBS" => "AV", "WRB" => "AV"
+       ];
+
+      foreach ($tagged_tokens as $t) {
+          $tag = trim($t['tag']);
+          $tag = (isset($simplified_parts_of_speech[$tag])) ?
+              $simplified_parts_of_speech[$tag] : $tag;
+          $token = ($with_tokens) ? $t['token'] . "~" : "";
+          $tagged_phrase .= $token . $tag .  " ";
+      }
+
+      return $tagged_phrase;
    }
 }
 
