@@ -1,88 +1,71 @@
 <?php
- namespace HW3_Composer;
+namespace HW3_Composer;
 
- use seekquarry\yioop\configs as C;
+use seekquarry\yioop\configs as C;
 
- require_once "vendor/autoload.php";
+require_once "vendor/autoload.php";
  
-/*
- Parts of speech from the lexicon 
- 1. noun
- 2. pronoun
- 3. ex_noun
- 4. verb
- 5. adjective
- 6. adverb
-*/
 
- class HindiToknize
- {
-    public static function tagTokenizePartsofSpeech($text)
-    {
-        static $dictionary = [];
-        if (empty($dictionary)) {
-            $fh = 
-            gzopen('lexicon.txt.gz', 'r'); 
-            while ($line = gzgets($fh)) {
-                $line = gzgets($fh);
-                $line = trim($line, ' ');
-                $tags = explode(',', $line);
-                $dictionary[array_shift($tags)] = $tags;
-            }
-            gzclose($fh);
-        }
-        preg_match_all("/[\w\d]+/", $text, $matches);
+class HindiToknize
+{
+   public static function tagTokenizePartsofSpeech($text)
+   {
+       static $dictionary = [];
+       if (empty($dictionary)) {
+           $fh = 
+           gzopen('lexicon.txt.gz', 'r'); 
+           while ($line = gzgets($fh)) {
+               $line = gzgets($fh);
+               $line = trim($line, ' ');
+               $tags = explode(',', $line);
+               $dictionary[array_shift($tags)] = $tags;
+           }
+           gzclose($fh);
+       }
+       preg_match_all("/[\w\d]+/", $text, $matches);
+       $nouns = ['NN'];
+       $tokens = explode(' ', $text);
 
-        print_r($matches[0]);
-        print_r($matches[1]);
-        #print_r ($dictionary);
-        $nouns = ['NN'];
-        $tokens = explode(' ', $text);
+       $result = [];
+       $tag_list = [];
+       $i = 0;
 
-        print_r ($tokens);
+       foreach ($tokens as $token) {
+           $current = ['token' => $token, 'tag' => 'NN'];
+           if (!empty($dictionary[$token])) {
+               $tag_list = $dictionary[$token];
+               $current['tag'] = $tag_list[0];
+           }  
 
-        $result = [];
-        $tag_list = [];
-        $i = 0;
+           $result[$i] = $current;
+           $i++;
+           $previous = $current;
+           $previous_token = $token;
+       }
+       return $result;
+   }
 
-        foreach ($tokens as $token) {
-            $current = ['token' => $token, 'tag' => 'NN'];
-            if (!empty($dictionary[$token])) {
-                $tag_list = $dictionary[$token];
-                $current['tag'] = $tag_list[0];
-            }  
+   public static function taggedPartOfSpeechTokensToString($tagged_tokens, 
+                                                           $with_tokens = true)
+   {
+       $tagged_phrase = [];
+       $with_tokens = $with_tokens;
+       foreach ($tagged_tokens as $t) {
+           $tag = trim($t['tag']);
+           $tag = (isset($simplified_parts_of_speech[$tag])) ?
+               $simplified_parts_of_speech[$tag] : $tag;
+           $token = ($with_tokens) ? $t['token'] . "~" : "";
+           $tagged_phrase .= $token . $tag .  " ";
+       }
 
-            $result[$i] = $current;
-            $i++;
-            $previous = $current;
-            $previous_token = $token;
-        }
-        return $result;
-    }
-
-    public static function taggedPartOfSpeechTokensToString($tagged_tokens, 
-                                                            $with_tokens = true)
-    {
-        $tagged_phrase = [];
-        $with_tokens = $with_tokens;
-
-        foreach ($tagged_tokens as $t) {
-            $tag = trim($t['tag']);
-            $tag = (isset($simplified_parts_of_speech[$tag])) ?
-                $simplified_parts_of_speech[$tag] : $tag;
-            $token = ($with_tokens) ? $t['token'] . "~" : "";
-            $tagged_phrase .= $token . $tag .  " ";
-        }
-
-        return $tagged_phrase;
-    }
+       return $tagged_phrase;
+   }
 }
 
 $hiToken = new HindiToknize;
-$text = "अपने इनमें"; 
+$text = $argv[1]; 
 $tagged_tokens = $hiToken->tagTokenizePartsofSpeech($text);
-print_r ($tagged_tokens);
 $tagged_phrase = $hiToken->taggedPartOfSpeechTokensToString(
-            $tagged_tokens);
+                           $tagged_tokens);
 print_r ($tagged_phrase);
- ?>
+?>
