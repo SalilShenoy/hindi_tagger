@@ -6,6 +6,8 @@ use seekquarry\yioop\configs as C;
 require_once "vendor/autoload.php";
  
 
+$tags = ['NN', 'VB', 'CONJ', 'POST_POS', 'JJ', 'RB', 'OTHER','Q'];
+
 class HindiTokenizer
 {
    public static function tagTokenizePartsofSpeech($text)
@@ -23,23 +25,34 @@ class HindiTokenizer
            gzclose($fh);
        }
        preg_match_all("/[\w\d]+/", $text, $matches);
-       $nouns = ['NN'];
+       $nouns = ['NN','NNP','NNS'];
+       $verbs = ['VBZ','VBD','VBN'];
        $tokens = explode(' ', $text);
+       $tokens = array_reverse($tokens);
 
        $result = [];
        $tag_list = [];
        $i = 0;
 
        foreach ($tokens as $token) {
-
-           //default to common noun 
-           $current = ['token' => $token, 'tag' => 'NN'];
+ 
+           $current = ['token' => $token, 'tag' => 'POST_POS'];
            if (!empty($dictionary[$token])) {
                $tag_list = $dictionary[$token];
                $current['tag'] = $tag_list[0];
            }
 
-           if ($current	   
+           if ($previous['tag'] == 'NN' && in_array($cuurent['tag'], $nouns)) {
+              $current['tag'] = 'JJ';
+           }
+
+           if ($previous['tag'] == 'JJ' && in_array($current['tag'],$nouns) == false) {
+              $current['tag'] = 'RB';
+           }
+
+           if ($previos['tag'] == 'RB' && in_array($current['tag'],'RB') == false) {
+              $current['tag'] = 'RB';
+           }
 
            $result[$i] = $current;
            $i++;
