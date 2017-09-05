@@ -3,15 +3,12 @@ namespace HW3_Composer;
 
 use seekquarry\yioop\configs as C;
 require_once "vendor/autoload.php";
- 
-$tags = ['NN', 'VB', 'CONJ', 'POST_POS', 'JJ', 'RB', 'OTHER','Q'];
 
 class HindiTokenizer
 {
    public static function removePunctuations($text) 
    {
-	//$text = "है।";
-	 return preg_replace('/(|)\p{P}/u', ' ', $text); 
+	   return preg_replace('/(|,:)\p{P}/u', '', $text); 
    }
 
    public static function tagTokenizePartsofSpeech($text)
@@ -33,6 +30,7 @@ class HindiTokenizer
 
        $result = [];
        $tag_list = [];
+       $tag = "";
        $i = 0;
 
        foreach ($tokens as $token) {
@@ -42,9 +40,6 @@ class HindiTokenizer
 	            $current['tag'] = "Q";
 	        } elseif (!empty($dictionary[$token])) {
               $tag_list = $dictionary[$token];
-              if ($tag_list[0] == "case") {
-                $tag_list[0] = "CONJ";
-              }
               $current['tag'] = $tag_list[0];
           }
 
@@ -65,6 +60,8 @@ class HindiTokenizer
 	   for ($i = 1; $i < $length; $i++)
 	   {
 	      $current = $result[$i];
+        $current['token'] = trim($current['token']);
+        $current['tag'] = trim($current['tag']);
         print("Line No.: " + $i);
         print("\t");
         print($current['token']);
@@ -139,7 +136,11 @@ class HindiTokenizer
           "VB" => "VB", "VBD" => "VB", "VBN" => "VB", "VBP" => "VB",
           "VBZ" => "VB",
           "JJ" => "AJ", "JJR" => "AJ", "JJS" => "AJ",
-          "RB" => "AV", "RBR" => "AV", "RBS" => "AV", "WRB" => "AV"
+          "RB" => "AV", "RBR" => "AV", "RBS" => "AV", "WRB" => "AV",
+          "case" => "CONJ", 
+          "direct_pn" => "NP", "oblique_sg_pn" => "NP", "pn" => "NP",
+          "direct_DT" => "DT",
+          "INT" => "INTJ"
        ];
 
       foreach ($tagged_tokens as $t) {
@@ -155,15 +156,14 @@ class HindiTokenizer
 }
 
 $hiToken = new HindiTokenizer;
-$text = "श्रीनगर में एक 200 साऱ पुरानी दरगाह में आग ऱगनेके बाद प्रदशशनकाररयों नेपुलऱस पर पथराव ककया है और इऱाके में तनाव है।"; 
-$text = $hiToken->removePunctuations($text);
+$text = "श्रीनगर में एक 200 साऱ पुरानी दरगाह में आग ऱगनेके बाद प्रदशशनकाररयों नेपुलऱस पर पथराव ककया है और इऱाके में तनाव है।";
 
+$text = $hiToken->removePunctuations($text);
 $tagged_tokens = $hiToken->tagTokenizePartsofSpeech($text);
 $tagged_tokens = $hiToken->tagUnknownWords($tagged_tokens);
-$tagged_phrase = $hiToken->taggedPartOfSpeechTokensToString(
-                           $tagged_tokens);
+$tagged_phrase = $hiToken->taggedPartOfSpeechTokensToString($tagged_tokens);
+
 print($tagged_phrase);
-#श्रीनगर मेंएक 200 साऱ पुरानी दरगाह मेंआग ऱगनेके बाद प्रदशशनकाररयों नेपुलऱस पर पथराव ककया है और इऱाके मेंतनाव है।
 ?>
 
 
