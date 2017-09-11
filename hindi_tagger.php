@@ -6,6 +6,11 @@ require_once "vendor/autoload.php";
 
 class HindiTokenizer
 {
+   public static function reduceWhitespace($text) 
+   {
+      return preg_replace("/\s+/", " ", $text);
+   }
+
    public static function removePunctuations($text) 
    {
 	   return preg_replace('/(|,:)\p{P}/u', '', $text); 
@@ -76,7 +81,7 @@ class HindiTokenizer
               
               //RULE 1: If the previous word tagged is a Adjective / Pronoun / Postposition then
               //the current word is likely to be a noun
-              if ($previous['tag'] == 'JJ'     ||
+              if ($previous['tag'] == 'AJ'     ||
                   $previous['tag'] == 'PRO_NN' ||
                   $previous['tag'] == 'POST_POS') 
               {
@@ -105,6 +110,16 @@ class HindiTokenizer
                 $previous['tag'] = 'VB';
                 $result[$i] = $previous;
               }
+              //ADJECTIVE IDENTIFIATION
+              //RULE: if the currennt word ends with 'तम' or 'इक' or 'िक' or 'तर' then the word is an
+              //adjective
+              elseif ( mb_substr($current['token'], -2, 2) == "इक" || 
+                       mb_substr($current['token'], -2, 2) == "िक" ||
+                       mb_substr($current['token'], -2, 2) == "तर"  ||
+                       mb_substr($current['token'], -2, 2) == "तम") {
+                $current['tag'] = 'AJ';
+                $result[$i] = $current;
+              }
               else 
               {
                 if ($current['tag'] == "UNKNOWN") {
@@ -132,7 +147,7 @@ class HindiTokenizer
 
       $simplified_parts_of_speech = [
           "NN" => "NN", "NNS" => "NN", "NNP" => "NN", "NNPS" => "NN",
-          "PRP" => "NN", 'PRP$' => "NN", "WP" => "NN",
+          "WP" => "NN",
           "VB" => "VB", "VBD" => "VB", "VBN" => "VB", "VBP" => "VB",
           "VBZ" => "VB",
           "JJ" => "AJ", "JJR" => "AJ", "JJS" => "AJ",
@@ -157,8 +172,8 @@ class HindiTokenizer
 
 $hiToken = new HindiTokenizer;
 $text = "श्रीनगर में एक 200 साऱ पुरानी दरगाह में आग ऱगनेके बाद प्रदशशनकाररयों नेपुलऱस पर पथराव ककया है और इऱाके में तनाव है।";
-
 $text = $hiToken->removePunctuations($text);
+$text = $hiToken->reduceWhitespace($text);
 $tagged_tokens = $hiToken->tagTokenizePartsofSpeech($text);
 $tagged_tokens = $hiToken->tagUnknownWords($tagged_tokens);
 $tagged_phrase = $hiToken->taggedPartOfSpeechTokensToString($tagged_tokens);
