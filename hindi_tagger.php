@@ -1,8 +1,4 @@
 <?php
-namespace HW3_Composer;
-
-use seekquarry\yioop\configs as C;
-require_once "vendor/autoload.php";
 
 class HindiTokenizer
 {
